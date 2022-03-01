@@ -43,24 +43,10 @@ public class UserDaoImp implements UserDao {
       return query.getResultList();
    }
    @Override
-   public User getUserByCarId (long carId) {
-      Query query = sessionFactory.getCurrentSession().createQuery("from User where carId = :carId");
-      query.setParameter("carId", carId);
-      User user = (User) query.getSingleResult();
-      return user;
+   public User getUsersByCarModelAndSeries (String model, int series) {
+      Query query = sessionFactory.getCurrentSession().createQuery("from User as user inner join fetch user.car where model = :model and series = :series");
+      query.setParameter("model", model);
+      query.setParameter("series", series);
+      return (User) query.getSingleResult();
    }
-
-   @Override
-   public void cleanUsersTable() {
-      try (Session session = sessionFactory.openSession()){
-         Transaction transaction = session.beginTransaction();
-         Query query = session.createSQLQuery("TRUNCATE TABLE users;")
-                 .addEntity(User.class);
-         query.executeUpdate();
-         transaction.commit();
-      }catch (Exception ignored) {
-      }
-   }
-
-
 }
